@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ares - Automated Resource Engagement System</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="tech-bg">
+        <canvas id="bg-network"></canvas>
+    </div>
+
+    <div class="hud-wrapper">
+        <!-- TOP: Timeline -->
+        <div id="module-timeline" class="glass-panel">
+            <div id="top-ruler"></div>
+        </div>
+
+        <div class="hud-main">
+            <!-- LEFT COLUMN -->
+            <div class="col-left">
+                <!-- CPU / RAM / POWER Module -->
+                <div id="module-cpu-ram" class="glass-panel widget">
+                    <h3 class="module-title">STATO SISTEMA</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item" id="cpu-stat" data-value="0">
+                            <svg viewBox="0 0 100 100" class="circle-chart">
+                                <circle class="bg" cx="50" cy="50" r="40" />
+                                <circle class="fg" cx="50" cy="50" r="40" stroke-dasharray="0 250" />
+                            </svg>
+                            <div class="stat-text">
+                                <span class="label">Carico CPU</span>
+                                <span class="value" id="cpu-value">0%</span>
+                            </div>
+                        </div>
+                        <div class="stat-item" id="ram-stat" data-value="0">
+                            <svg viewBox="0 0 100 100" class="circle-chart">
+                                <circle class="bg" cx="50" cy="50" r="40" />
+                                <circle class="fg" cx="50" cy="50" r="40" stroke-dasharray="0 250" />
+                            </svg>
+                            <div class="stat-text">
+                                <span class="label">Memoria in uso</span>
+                                <span class="value" id="ram-value">0%</span>
+                            </div>
+                        </div>
+                        <div class="stat-item" id="gpu-stat" data-value="0">
+                            <svg viewBox="0 0 100 100" class="circle-chart">
+                                <circle class="bg" cx="50" cy="50" r="40" />
+                                <circle class="fg" cx="50" cy="50" r="40" stroke-dasharray="0 250" />
+                            </svg>
+                            <div class="stat-text">
+                                <span class="label">Carico GPU</span>
+                                <span class="value" id="gpu-value">--%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DISK Module -->
+                <div id="module-disk" class="glass-panel widget">
+                    <h3 class="module-title">ARCHIVIAZIONE</h3>
+                    <div class="disk-info">
+                        <div class="disk-name">Disco Principale (SSD)</div>
+                        <div class="disk-bar-container">
+                            <div class="disk-bar" id="disk-bar" style="width: 75%;"></div>
+                        </div>
+                        <div class="disk-details">
+                            <span>Totale: <span id="disk-total">1.0 TB</span></span>
+                            <span>Usato: <span id="disk-used">750 GB</span></span>
+                            <span>Libero: <span id="disk-free">250 GB</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMAIL ANALYSIS MODULE (di fianco a STATO SISTEMA) -->
+            <div id="module-email" class="glass-panel widget">
+                <h3 class="module-title">ANALISI EMAIL</h3>
+                <button id="email-refresh-btn" class="email-refresh-btn" title="Aggiorna ora">&#8635;</button>
+                <div id="email-list" class="email-list">
+                    <div class="email-empty">Caricamento...</div>
+                </div>
+            </div>
+
+            <!-- CENTER COLUMN -->
+            <div class="col-center">
+                <!-- TOP CENTER: CLOCK -->
+                <div id="module-clock" class="glass-panel text-center widget">
+                    <div class="time-display" id="time-display">00:00:00</div>
+                    <div class="date-display" id="date-display">--/--/----</div>
+                </div>
+
+                <div id="module-center-core" class="core-container">
+                    <div class="arc-reactor">
+                        <div class="ring ring-outer"></div>
+                        <div class="ring ring-middle"></div>
+                        <div class="ring ring-inner"></div>
+                        <div class="ring ring-core"></div>
+                        <!-- Program labels around core -->
+                        <div class="floating-text t-1">Sistema Operativo</div>
+                        <div class="floating-text t-2">Protocollo Sicurezza</div>
+                        <div class="floating-text t-3">Rete Globale</div>
+                        <div class="floating-text t-4">Analisi Dati</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="col-right">
+                <!-- WEATHER MODULE -->
+                <div id="module-weather" class="glass-panel widget">
+                    <h3 class="module-title">METEO E AMBIENTE</h3>
+                    <div class="weather-header">
+                        <div class="city" id="weather-city">CARICAMENTO...</div>
+                    </div>
+                    <div class="weather-current">
+                        <div class="temp-big" id="weather-temp">--°C</div>
+                        <div class="weather-icon" id="weather-icon">--</div>
+                        <div class="cond" id="weather-cond">Caricamento</div>
+                        <div class="weather-details">
+                            Umidità: <span id="weather-humidity">--%</span><br>
+                            Vento: <span id="weather-wind">-- km/h</span><br>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NETWORK MODULE -->
+                <div id="module-network" class="glass-panel widget">
+                    <h3 class="module-title">FLUSSO DI RETE</h3>
+                    <div class="network-graph-container">
+                        <div class="graph-header">Download (<span id="net-dl-speed">0.0</span> MB/s)</div>
+                        <canvas id="canvas-download" class="live-canvas"></canvas>
+                    </div>
+                    <div class="network-graph-container">
+                        <div class="graph-header">Upload (<span id="net-up-speed">0.0</span> MB/s)</div>
+                        <canvas id="canvas-upload" class="live-canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- API USAGE MODULE -->
+                <div id="module-api-usage" class="glass-panel widget">
+                    <h3 class="module-title">UTILIZZO API</h3>
+                    <div id="api-usage-list" class="api-usage-list">
+                        <div class="api-usage-empty">Caricamento...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHAT / COMANDI VOCALI -->
+            <div id="module-chat" class="glass-panel widget">
+                <h3 class="module-title">COMANDI ARES</h3>
+                <div id="chat-log" class="chat-log"></div>
+                <form id="chat-form" class="chat-form">
+                    <input type="text" id="chat-input" placeholder="Es: com'è il meteo a Milano?" autocomplete="off" />
+                    <button type="submit" class="btn-primary">INVIA</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom City Input Modal (Ares Style) -->
+    <div id="city-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <h3 class="module-title" style="color: var(--primary);">LOCALIZZAZIONE OBIETTIVO</h3>
+            <p style="font-size: 12px; margin-bottom: 15px; color: #ccc; font-family: var(--font-mono);">INSERISCI LE
+                COORDINATE O LA CITTÀ BERSAGLIO:</p>
+            <input type="text" id="city-input" placeholder="Es: ROMA, IT" autocomplete="off" />
+            <div class="modal-actions">
+                <button id="city-cancel" class="btn-secondary">ANNULLA</button>
+                <button id="city-submit" class="btn-primary">CONFERMA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner modalità modifica riquadri -->
+    <div id="edit-mode-banner">MODALITÀ MODIFICA — trascina il riquadro per spostarlo, l'angolo in basso a destra per
+        ridimensionarlo. Clicca fuori per confermare.</div>
+    <button id="btn-reset-layout" title="Ripristina la disposizione originale dei riquadri">RESET LAYOUT</button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

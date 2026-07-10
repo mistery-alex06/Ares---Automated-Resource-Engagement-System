@@ -1,0 +1,10 @@
+# --- Configurazione Sensibile ---
+llm_config.json
+email_config.json
+
+# --- File di sistema e temporanei ---
+.DS_Store
+__pycache__/
+*.log
+*.db
+.env

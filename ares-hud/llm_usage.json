@@ -1,0 +1,11 @@
+{
+  "gemini": {
+    "calls_total": 1,
+    "calls_success": 1,
+    "calls_failed": 0,
+    "tokens_total": 538,
+    "last_used": "2026-07-09T09:19:34.813241",
+    "last_status": "success",
+    "last_error": null
+  }
+}
