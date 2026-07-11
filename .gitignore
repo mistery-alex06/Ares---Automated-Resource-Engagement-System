@@ -1,8 +1,19 @@
-# --- Configurazione Sensibile ---
+# --- Configurazione sensibile (chiavi API, credenziali) ---
 llm_config.json
+voice_config.json
 email_config.json
 
-# --- File di sistema e temporanei ---
+# --- Dati personali dell'utente (non credenziali, ma privati) ---
+email_cache.json
+reminders.json
+llm_usage.json
+city.txt
+
+# --- Documenti personali per il RAG locale (tutto tranne le istruzioni) ---
+ares-hud/knowledge/*
+!ares-hud/knowledge/README.md
+
+# --- File di sistema, temporanei e generati ---
 .DS_Store
 __pycache__/
 *.log

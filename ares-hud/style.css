@@ -517,10 +517,6 @@ body {
     background: rgba(255, 255, 255, 0.06);
 }
 
-.api-usage-row.disabled {
-    opacity: 0.45;
-}
-
 .api-usage-row-main {
     display: flex;
     align-items: center;

@@ -23,6 +23,8 @@ from services import weather as weather_service
 from tools import browser
 from tools import whatsapp
 from tools import reminders
+from tools import spotify
+from tools import discord_app
 
 _SKILLS = []
 
@@ -76,6 +78,113 @@ def _skill_whatsapp(message):
     if motivo == 'no_results':
         return f"Non ho trovato nessun contatto o gruppo chiamato \"{contatto}\" su WhatsApp.", None
     return "Non sono riuscito a inviare il messaggio su WhatsApp. Controlla che in Chrome sia attiva l'opzione \"Consenti JavaScript da Apple Events\" (Vista > Opzioni per sviluppatori).", None
+
+
+# --- Skill: Spotify (controllo nativo via AppleScript) ----------------------
+
+def _extract_spotify_command(text):
+    """
+    Riconosce comandi Spotify. Richiede sempre una parola chiave esplicita
+    ('spotify', 'la musica' o 'canzone') tranne che per l'apertura, così da
+    non entrare in conflitto con il controllo video di YouTube (che usa le
+    stesse parole 'pausa'/'play' ma senza richiedere un contesto musicale).
+    Restituisce (azione, valore_o_None) oppure None.
+    """
+    text_lower = text.lower().strip()
+
+    if re.search(r"\bapri\s+spotify\b", text_lower):
+        return "open", None
+
+    # Frasi inequivocabili: non serve la parola chiave 'spotify/musica/canzone'
+    if re.search(r"\b(cosa\s+sta\s+suonando|che\s+canzone\s+(è|e['’])|che\s+musica\s+(è|e['’]))\b", text_lower):
+        return "current", None
+
+    mentions_music = bool(re.search(r"\b(spotify|la musica|canzone)\b", text_lower))
+    if not mentions_music:
+        return None
+
+    if re.search(r"\b(prossima|salta|skip|avanti)\b", text_lower):
+        return "next", None
+    if re.search(r"\b(precedente|indietro)\b", text_lower):
+        return "previous", None
+    vol_match = re.search(r"volume\D*(\d{1,3})", text_lower)
+    if vol_match:
+        return "volume", int(vol_match.group(1))
+    if re.search(r"\b(pausa|ferma|stoppa|metti\s+in\s+pausa)\b", text_lower):
+        return "pause", None
+    if re.search(r"\b(riprendi|fai\s+partire|avvia|riproduci|play)\b", text_lower):
+        return "play", None
+
+    return None
+
+
+@skill("spotify", priority=12)
+def _skill_spotify(message):
+    result = _extract_spotify_command(message)
+    if not result:
+        return None
+    azione, valore = result
+
+    if azione == "open":
+        return ("Apro Spotify.", None) if spotify.open_app() else ("Non sono riuscito ad aprire Spotify.", None)
+
+    if azione == "current":
+        track = spotify.get_current_track()
+        if not track:
+            return "Spotify non è aperto o non sta riproducendo nulla al momento.", None
+        stato = "in pausa" if track["state"] == "paused" else "in riproduzione"
+        return f"Sto ascoltando {track['title']} di {track['artist']}, {stato}.", None
+
+    if azione == "volume":
+        ok = spotify.set_volume(valore)
+        return (f"Volume di Spotify impostato al {valore}%.", None) if ok else ("Spotify non sembra aperto.", None)
+
+    azioni_semplici = {
+        "pause": (spotify.pause, "Musica in pausa."),
+        "play": (spotify.play, "Riprendo la riproduzione."),
+        "next": (spotify.next_track, "Prossima canzone."),
+        "previous": (spotify.previous_track, "Canzone precedente."),
+    }
+    funzione, messaggio_ok = azioni_semplici[azione]
+    return (messaggio_ok, None) if funzione() else ("Spotify non sembra aperto.", None)
+
+
+# --- Skill: Discord (controllo via scorciatoie da tastiera native) ----------
+
+def _extract_discord_command(text):
+    """Riconosce comandi Discord. Richiede sempre la parola 'discord' esplicita."""
+    text_lower = text.lower().strip()
+    if "discord" not in text_lower:
+        return None
+
+    if re.search(r"\bapri\b", text_lower):
+        return "open"
+    if re.search(r"\b(silenzia|muta|disattiva\s+il\s+microfono|riattiva\s+il\s+microfono)\b", text_lower):
+        return "mute"
+    if re.search(r"\bdisattiva\s+(completamente\s+)?l['’]audio\b", text_lower):
+        return "deafen"
+
+    return None
+
+
+@skill("discord", priority=13)
+def _skill_discord(message):
+    azione = _extract_discord_command(message)
+    if not azione:
+        return None
+
+    if azione == "open":
+        return ("Apro Discord.", None) if discord_app.open_app() else ("Non sono riuscito ad aprire Discord.", None)
+
+    funzioni = {"mute": discord_app.toggle_mute, "deafen": discord_app.toggle_deafen}
+    messaggi_ok = {"mute": "Fatto, ho attivato/disattivato il microfono su Discord.", "deafen": "Fatto, ho attivato/disattivato l'audio su Discord."}
+
+    ok, motivo = funzioni[azione]()
+    if ok:
+        return messaggi_ok[azione], None
+    if motivo == 'not_running':
+        return "Discord non risulta aperto al momento.", None
+    return "Non sono riuscito a controllare Discord.", None
 
 
 # --- Skill: Meteo -----------------------------------------------------------
