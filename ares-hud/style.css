@@ -150,26 +150,40 @@ body {
 
 /* Main Layout */
 .hud-main {
-    display: flex;
-    flex: 1;
-    gap: 20px;
-    position: relative; /* ancora per i widget posizionati in absolute */
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .col-left,
 .col-right {
-    width: 280px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: contents;
 }
 
 .col-center {
-    flex: 1;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.col-center > * {
+    pointer-events: auto;
+}
+
+/* module-clock: posizione/dimensione gestite interamente dal sistema di widget
+   (classe .widget + JS computeDefaultLayout/transform). Qui solo lo z-index,
+   così l'orologio resta sempre visibile sopra eventuali altri riquadri. */
+#module-clock {
+    z-index: 300;
 }
 
 /* SVG Circles */
