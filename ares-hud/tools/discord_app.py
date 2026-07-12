@@ -75,6 +75,21 @@ def toggle_deafen():
     return True, None
 
 
+def toggle_camera():
+    """
+    Attiva/disattiva la videocamera durante una videochiamata (⌘⇧V).
+    NOTA: questa scorciatoia è meno documentata ufficialmente delle altre due
+    (mute/deafen); se non dovesse funzionare sulla tua versione di Discord,
+    fammelo sapere e la sostituiamo con un click diretto sul pulsante nell'UI.
+    """
+    if not is_running():
+        return False, 'not_running'
+    if not _activate_discord():
+        return False, 'activation_failed'
+    _send_keystroke("v", ["command down", "shift down"])
+    return True, None
+
+
 def open_quick_switcher(query=None):
     """Apre il Quick Switcher (⌘K) e, se fornita, digita una query e preme Invio."""
     if not is_running():

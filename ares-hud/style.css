@@ -766,6 +766,124 @@ body {
     font-weight: bold;
 }
 
+/* App Control Module */
+#module-app-control {
+    display: flex;
+    flex-direction: column;
+}
+
+.app-control-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+
+.app-control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+.app-control-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.app-control-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.app-control-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.app-control-btn:hover {
+    border-color: var(--secondary);
+    background: rgba(255, 204, 0, 0.1);
+    box-shadow: 0 0 8px rgba(255, 204, 0, 0.3);
+}
+
+.app-control-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 26, 26, 0.2);
+    border-color: var(--primary);
+}
+
+/* Colore identificativo per app — solo un accenno (bordo sinistro sottile +
+   sfondo leggerissimo), così da restare leggibile e non pesante alla vista */
+.app-row-youtube {
+    border-left: 3px solid #e5484d;
+    background: rgba(229, 72, 77, 0.05);
+}
+
+.app-row-spotify {
+    border-left: 3px solid #1a7a4c;
+    background: rgba(26, 122, 76, 0.07);
+}
+
+.app-row-discord {
+    border-left: 3px solid #8a63d2;
+    background: rgba(138, 99, 210, 0.07);
+}
+
+.app-row-youtube .app-control-btn:hover {
+    border-color: #e5484d;
+    background: rgba(229, 72, 77, 0.15);
+    box-shadow: 0 0 8px rgba(229, 72, 77, 0.4);
+}
+
+.app-row-spotify .app-control-btn:hover {
+    border-color: #1a7a4c;
+    background: rgba(26, 122, 76, 0.18);
+    box-shadow: 0 0 8px rgba(26, 122, 76, 0.4);
+}
+
+.app-row-discord .app-control-btn:hover {
+    border-color: #8a63d2;
+    background: rgba(138, 99, 210, 0.18);
+    box-shadow: 0 0 8px rgba(138, 99, 210, 0.4);
+}
+
+.app-control-status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    margin-top: 8px;
+    min-height: 14px;
+    transition: color 0.2s ease;
+}
+
+.app-control-status.error {
+    color: var(--primary);
+}
+
+.app-control-status.success {
+    color: #2ee06a;
+}
+
 /* Animations Keyframes */
 @keyframes spin {
     100% {

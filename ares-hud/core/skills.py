@@ -475,3 +475,54 @@ def handle_chat_message(message):
 
     memory.save_interaction(message, reply)
     return reply, extra
+
+
+# ══════════════════════════════════════════════════════════════════════════
+#  CONTROLLO APP — azioni dirette dal widget (pulsanti, non testo libero)
+# ══════════════════════════════════════════════════════════════════════════
+
+def handle_app_control(app_name, action):
+    """
+    Gestisce i clic sui pulsanti del widget "CONTROLLO APP". A differenza delle
+    skill sopra (che interpretano testo libero), qui app/azione arrivano già
+    determinati dal frontend. Restituisce (ok: bool, message: str).
+    """
+    if app_name == "youtube":
+        if action == "playpause":
+            status = browser.control_youtube("toggle")
+            if status == "paused":
+                return True, "Video in pausa."
+            if status == "playing":
+                return True, "Video in riproduzione."
+            if status == "no_video":
+                return False, "Nessun video attivo nella tab YouTube."
+            return False, "Nessuna tab YouTube aperta."
+        if action in ("next", "previous"):
+            fn = browser.youtube_next if action == "next" else browser.youtube_previous
+            status = fn()
+            if status == "ok":
+                return True, "Fatto."
+            if status == "not_available":
+                return False, "Disponibile solo con una playlist attiva."
+            return False, "Nessuna tab YouTube aperta."
+        return False, "Azione non valida."
+
+    if app_name == "spotify":
+        if action == "playpause":
+            return (True, "Fatto.") if spotify.play_pause() else (False, "Spotify non sembra aperto.")
+        if action == "next":
+            return (True, "Prossima canzone.") if spotify.next_track() else (False, "Spotify non sembra aperto.")
+        return False, "Azione non valida."
+
+    if app_name == "discord":
+        if action == "camera":
+            ok, motivo = discord_app.toggle_camera()
+        elif action == "mic":
+            ok, motivo = discord_app.toggle_mute()
+        else:
+            return False, "Azione non valida."
+        if ok:
+            return True, "Fatto."
+        return (False, "Discord non risulta aperto.") if motivo == 'not_running' else (False, "Non sono riuscito a controllare Discord.")
+
+    return False, "App non riconosciuta."

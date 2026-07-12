@@ -137,8 +137,10 @@ def control_youtube(action):
 
     if action == "pause":
         js_body = "if(!v.paused){v.pause();}"
-    else:
+    elif action == "play":
         js_body = "if(v.paused){v.play();}"
+    else:  # "toggle": vero toggle, usato dal pulsante Play/Pausa del widget
+        js_body = "if(v.paused){v.play();}else{v.pause();}"
 
     js = (
         "(function(){"
@@ -171,6 +173,60 @@ def control_youtube(action):
     except Exception as e:
         print(f"Errore controllo YouTube: {e}")
         return "not_found"
+
+
+def _click_youtube_button(selector_class):
+    """
+    Clicca un pulsante del player YouTube (es. 'ytp-next-button') tramite un
+    click JS sintetico (stesso approccio affidabile usato per WhatsApp Web).
+    Restituisce 'ok' se il pulsante esiste e viene cliccato, 'not_available'
+    se il pulsante non è presente (es. video non in una playlist), oppure
+    'not_found' se non c'è nessuna tab YouTube aperta.
+    """
+    if not IS_MAC:
+        return "not_found"
+
+    js = (
+        "(function(){"
+        f"var b=document.querySelector('.{selector_class}');"
+        "if(!b){return 'not_available';}"
+        "b.click();"
+        "return 'ok';"
+        "})();"
+    )
+
+    applescript = f'''
+    tell application "Google Chrome"
+        set resultText to "not_found"
+        repeat with w in windows
+            repeat with t in tabs of w
+                if URL of t contains "youtube.com/watch" then
+                    tell t
+                        set resultText to execute javascript "{js}"
+                    end tell
+                end if
+            end repeat
+        end repeat
+        return resultText
+    end tell
+    '''
+
+    try:
+        result = subprocess.run(['osascript', '-e', applescript], capture_output=True, text=True, timeout=10)
+        return result.stdout.strip() or "not_found"
+    except Exception as e:
+        print(f"Errore controllo YouTube: {e}")
+        return "not_found"
+
+
+def youtube_next():
+    """Salta al video successivo (funziona solo se il video fa parte di una playlist/coda)."""
+    return _click_youtube_button("ytp-next-button")
+
+
+def youtube_previous():
+    """Torna al video precedente (funziona solo se il video fa parte di una playlist/coda)."""
+    return _click_youtube_button("ytp-prev-button")
 
 
 SITE_ALIASES = {

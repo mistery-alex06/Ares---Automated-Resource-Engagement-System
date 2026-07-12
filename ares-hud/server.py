@@ -107,6 +107,19 @@ def refresh_email_summary_route():
     return jsonify(email_analysis.refresh_email_summary())
 
 
+@app.route('/api/app_control', methods=['POST'])
+def app_control():
+    data = request.json or {}
+    app_name = data.get('app')
+    action = data.get('action')
+
+    if not app_name or not action:
+        return jsonify({"status": "error", "message": "Parametri mancanti"}), 400
+
+    ok, message = skills.handle_app_control(app_name, action)
+    return jsonify({"status": "success" if ok else "error", "message": message})
+
+
 if __name__ == '__main__':
     weather.load_initial_city()
     reminders.load_reminders()

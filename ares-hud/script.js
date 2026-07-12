@@ -262,6 +262,7 @@ function computeDefaultLayout() {
         'module-weather': { x: rightX, y: 0,                w: colW,  h: weatherH },
         'module-network': { x: rightX, y: weatherH + gap,   w: colW,  h: networkH },
         'module-api-usage': { x: apiUsageX, y: 0, w: colW, h: weatherH },
+        'module-app-control': { x: apiUsageX, y: weatherH + gap, w: colW, h: networkH },
         'module-email':     { x: emailX, y: 0, w: colW, h: cpuRamH },
         'module-chat':    { x: Math.round(availW / 2 - chatW / 2), y: availH - chatH, w: chatW, h: chatH },
     };
@@ -822,6 +823,45 @@ function initEmailRefreshButton() {
     });
 }
 
+// ─── Controllo App (widget interattivo: pulsanti diretti) ──────────────────
+function initAppControl() {
+    const buttons = document.querySelectorAll('.app-control-btn');
+    const statusEl = document.getElementById('app-control-status');
+    if (!buttons.length) return;
+
+    let statusTimer = null;
+    function showStatus(text, isError) {
+        if (!statusEl) return;
+        statusEl.textContent = text;
+        statusEl.classList.toggle('error', !!isError);
+        statusEl.classList.toggle('success', !isError);
+        if (statusTimer) clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => { statusEl.textContent = ''; statusEl.classList.remove('error', 'success'); }, 3500);
+    }
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const app = btn.dataset.app;
+            const action = btn.dataset.action;
+            btn.disabled = true;
+            try {
+                const res = await fetch('http://localhost:5001/api/app_control', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ app, action }),
+                });
+                const data = await res.json();
+                showStatus(data.message || (data.status === 'success' ? 'Fatto.' : 'Errore.'), data.status !== 'success');
+            } catch (e) {
+                console.error('Errore controllo app:', e);
+                showStatus('Errore di connessione ad Ares.', true);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    });
+}
+
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     renderTimeline();
@@ -908,4 +948,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initEmailRefreshButton();
     setInterval(fetchEmailSummary, 30000);
     fetchEmailSummary();
+
+    initAppControl();
 });

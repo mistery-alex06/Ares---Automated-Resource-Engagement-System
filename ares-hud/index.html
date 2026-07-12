@@ -153,6 +153,36 @@
                 </div>
             </div>
 
+            <!-- APP CONTROL MODULE (sotto Utilizzo API, a sinistra di Flusso di Rete) -->
+            <div id="module-app-control" class="glass-panel widget">
+                <h3 class="module-title">CONTROLLO APP</h3>
+                <div class="app-control-list">
+                    <div class="app-control-row app-row-youtube">
+                        <span class="app-control-label">YouTube</span>
+                        <div class="app-control-buttons">
+                            <button class="app-control-btn" data-app="youtube" data-action="previous" title="Video precedente">⏮</button>
+                            <button class="app-control-btn" data-app="youtube" data-action="playpause" title="Play/Pausa">⏯</button>
+                            <button class="app-control-btn" data-app="youtube" data-action="next" title="Video successivo">⏭</button>
+                        </div>
+                    </div>
+                    <div class="app-control-row app-row-spotify">
+                        <span class="app-control-label">Spotify</span>
+                        <div class="app-control-buttons">
+                            <button class="app-control-btn" data-app="spotify" data-action="playpause" title="Play/Pausa">⏯</button>
+                            <button class="app-control-btn" data-app="spotify" data-action="next" title="Canzone successiva">⏭</button>
+                        </div>
+                    </div>
+                    <div class="app-control-row app-row-discord">
+                        <span class="app-control-label">Discord</span>
+                        <div class="app-control-buttons">
+                            <button class="app-control-btn" data-app="discord" data-action="camera" title="Attiva/disattiva telecamera">📹</button>
+                            <button class="app-control-btn" data-app="discord" data-action="mic" title="Attiva/disattiva microfono">🎙️</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="app-control-status" class="app-control-status"></div>
+            </div>
+
             <!-- CHAT / COMANDI VOCALI -->
             <div id="module-chat" class="glass-panel widget">
                 <h3 class="module-title">COMANDI ARES</h3>
